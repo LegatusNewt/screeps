@@ -28,7 +28,7 @@ module.exports.loop = function () {
         // if creep is harvester, call harvester script
         if (creep.memory.role == 'harvester') {
             roleHarvester.run(creep);
-            harvesters.push(Game.creeps[i]);
+            harvesters.push(creep);
         }
         // if creep is upgrader, call upgrader script
         else if (creep.memory.role == 'upgrader') {
