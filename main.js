@@ -6,7 +6,11 @@ var roleBuilder = require('role.builder');
 var roleRepairer = require('role.repairer');
 var roleWallRepairer = require('role.wallRepairer');
 
+
 module.exports.loop = function () {
+    
+    var harvesters = [];
+    
     // check for memory entries of died creeps by iterating over Memory.creeps
     for (let name in Memory.creeps) {
         // and checking if the creep is still alive
@@ -24,6 +28,7 @@ module.exports.loop = function () {
         // if creep is harvester, call harvester script
         if (creep.memory.role == 'harvester') {
             roleHarvester.run(creep);
+            harvesters.push(Game.creeps[i]);
         }
         // if creep is upgrader, call upgrader script
         else if (creep.memory.role == 'upgrader') {
@@ -43,7 +48,7 @@ module.exports.loop = function () {
         }
     }
 
-    var towers = Game.rooms.W24S23.find(FIND_STRUCTURES, {
+    var towers = Game.rooms.find(FIND_STRUCTURES, {
         filter: (s) => s.structureType == STRUCTURE_TOWER
     });
     for (let tower of towers) {
