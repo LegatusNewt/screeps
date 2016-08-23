@@ -21,7 +21,7 @@ module.exports.loop = function () {
     }
 
     var harvesters = _.filter(Game.creeps, {memory: 'harvester'});
-    assignSource(harvesters);
+    //assignSource.run(harvesters);
     
     // for every creep name in Game.creeps
     for (let name in Game.creeps) {
@@ -63,8 +63,8 @@ module.exports.loop = function () {
     // setup some minimum numbers for different roles
     var minimumNumberOfHarvesters = 4;
     var minimumNumberOfUpgraders = 3;
-    var minimumNumberOfBuilders = 4;
-    var minimumNumberOfRepairers = 1;
+    var minimumNumberOfBuilders = 6;
+    var minimumNumberOfRepairers = 2;
     var minimumNumberOfWallRepairers = 2;
 
     // count the number of creeps alive for each role

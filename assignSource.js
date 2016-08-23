@@ -4,12 +4,13 @@ module.exports = {
     run: function(creeps) 
     {
         var num_harvesters = creeps.size;
+        var room;
         
         if(!num_harvesters==0)
         {
-            var room = creeps[0].room;
+            room = creeps[0].room;
         }
-        if(!room.memory.sources && !(room == null))
+        if(!(room == null) && !room.memory.sources)
         {
             room.memory.sources={};
             var sources = room.find(FIND_SOURCES);
@@ -22,7 +23,10 @@ module.exports = {
             }
         }
 
-        var sources = room.memory.sources;
+        if(!(room==null))
+        {
+            var sources = room.memory.sources;
+        }
         
         var index = 0;
         for(var k = 0; k++; k < sources.size)
