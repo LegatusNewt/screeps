@@ -18,9 +18,15 @@ module.exports = {
             // if (creep.transfer(creep.room.controller, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
 
             // try to upgrade the controller
+            var source = creep.pos.findClosestByRange(FIND_SOURCES);
+            if(creep.pos.isNearTo(source))
+            {
+                creep.moveTo(creep.room.controller);    
+            }
             if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                // if not in range, move towards the controller
-                creep.moveTo(creep.room.controller);
+                // if not in range, move towards the controller           
+                creep.moveTo(creep.room.controller);  
+                                                   
             }
         }
         // if creep is supposed to harvest energy from source
@@ -28,10 +34,12 @@ module.exports = {
             // find closest source
             var source = creep.pos.findClosestByPath(FIND_SOURCES);
             // try to harvest energy, if the source is not in range
-            if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
+            if (creep.harvest(source) == ERR_NOT_IN_RANGE) 
+            {
                 // move towards the source
                 creep.moveTo(source);
             }
+
         }
     }
 };

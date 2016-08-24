@@ -21,6 +21,11 @@ module.exports = {
             // if one is found
             if (constructionSite != undefined) {
                 // try to build, if the constructionSite is not in range
+                var source = creep.pos.findClosestByRange(FIND_SOURCES);
+                if(creep.pos.isNearTo(source))
+                {
+                    creep.moveTo(constructionSite);    
+                }
                 if (creep.build(constructionSite) == ERR_NOT_IN_RANGE) {
                     // move towards the constructionSite
                     creep.moveTo(constructionSite);

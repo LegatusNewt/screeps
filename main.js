@@ -1,5 +1,6 @@
 // import modules
 require('prototype.spawn')();
+require('military.spawn')();
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
@@ -19,6 +20,8 @@ module.exports.loop = function () {
             delete Memory.creeps[name];
         }
     }
+    
+    
 
     var harvesters = _.filter(Game.creeps, {memory: 'harvester'});
     //assignSource.run(harvesters);
@@ -66,7 +69,8 @@ module.exports.loop = function () {
     var minimumNumberOfBuilders = 6;
     var minimumNumberOfRepairers = 2;
     var minimumNumberOfWallRepairers = 2;
-
+    var minimumNumberOfDefenders= 2;
+    
     // count the number of creeps alive for each role
     // _.sum will count the number of properties in Game.creeps filtered by the
     //  arrow function, which checks for the creep being a harvester
@@ -75,6 +79,7 @@ module.exports.loop = function () {
     var numberOfBuilders = _.sum(Game.creeps, (c) => c.memory.role == 'builder');
     var numberOfRepairers = _.sum(Game.creeps, (c) => c.memory.role == 'repairer');
     var numberOfWallRepairers = _.sum(Game.creeps, (c) => c.memory.role == 'wallRepairer');
+    var numberOfDefenders = _.sum(Game.creeps, (c) => c.memory.role =='defender');
 
     var energy = Game.spawns.Alpha.room.energyCapacityAvailable;
     var name = undefined;
@@ -110,6 +115,9 @@ module.exports.loop = function () {
     else if (numberOfWallRepairers < minimumNumberOfWallRepairers) {
         // try to spawn one
         name = Game.spawns.Alpha.createCustomCreep(energy, 'wallRepairer');
+    }
+    else if(numberOfDefenders < minimumNumberOfDefenders){
+        name = Game.spawns.Alpha.createMilitaryCreep(energy,'defender');
     }
     else {
         // else try to spawn a builder
