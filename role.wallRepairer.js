@@ -1,4 +1,4 @@
-var roleBuilder = require('role.builder');
+var roleUpgrader = require('role.upgrader');
 
 module.exports = {
     // a function to run the logic for this role
@@ -18,7 +18,8 @@ module.exports = {
         if (creep.memory.working == true) {
             // find all walls in the room
             var walls = creep.room.find(FIND_STRUCTURES, {
-                filter: (s) => s.structureType == STRUCTURE_WALL
+                filter: (s) => s.structureType == (s.structureType == STRUCTURE_RAMPART
+                             || s.structureType == STRUCTURE_WALL)
             });
 
             var target = undefined;
@@ -56,7 +57,7 @@ module.exports = {
             // if we can't fine one
             else {
                 // look for construction sites
-                roleBuilder.run(creep);
+                roleUpgrader.run(creep);
             }
         }
         // if creep is supposed to harvest energy from source

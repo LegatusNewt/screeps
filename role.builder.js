@@ -1,4 +1,4 @@
-var roleUpgrader = require('role.upgrader');
+var roleRepairer = require('role.repairer');
 
 module.exports = {
     // a function to run the logic for this role
@@ -33,8 +33,24 @@ module.exports = {
             }
             // if no constructionSite is found
             else {
-                // go upgrading the controller
-                roleUpgrader.run(creep);
+                //repair ramparts or become generic repairer
+                var upgradeTarget = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                     filter: function(object) {
+                       return object.structureType == STRUCTURE_RAMPART && object.hits < 1000;
+                }
+                });
+                if(upgradeTarget != null)
+                {
+                    if (creep.repair(upgradeTarget) == ERR_NOT_IN_RANGE) 
+                    {
+                    // move towards the constructionSite
+                        creep.moveTo(upgradeTarget);
+                    }
+                }   
+                else
+                {
+                    roleRepairer.run(creep);
+                }
             }
         }
         // if creep is supposed to harvest energy from source

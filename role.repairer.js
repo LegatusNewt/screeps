@@ -1,5 +1,4 @@
-var roleBuilder = require('role.builder');
-
+var roleWallRepairer = require('role.wallRepairer');
 module.exports = {
     // a function to run the logic for this role
     run: function(creep) {
@@ -29,6 +28,11 @@ module.exports = {
             // if we find one
             if (structure != undefined) {
                 // try to repair it, if it is out of range
+                var source = creep.pos.findClosestByRange(FIND_SOURCES);
+                if(creep.pos.isNearTo(source))
+                {
+                    creep.moveTo(structure);    
+                }
                 if (creep.repair(structure) == ERR_NOT_IN_RANGE) {
                     // move towards it
                     creep.moveTo(structure);
@@ -37,7 +41,7 @@ module.exports = {
             // if we can't fine one
             else {
                 // look for construction sites
-                roleBuilder.run(creep);
+                roleWallRepairer.run(creep);
             }
         }
         // if creep is supposed to harvest energy from source

@@ -2,6 +2,7 @@
 require('prototype.spawn')();
 require('military.spawn')();
 var roleHarvester = require('role.harvester');
+var roleDefender = require('role.defender');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 var roleRepairer = require('role.repairer');
@@ -19,6 +20,25 @@ module.exports.loop = function () {
             // if not, delete the memory entry
             delete Memory.creeps[name];
         }
+    }
+    
+    var ramparts =_.filter(Game.structures, {structureType: STRUCTURE_RAMPART});
+    var ramp;
+    
+    for(var roomName in Game.rooms)
+    {
+        var room = Game.rooms[roomName];
+        room.memory.ramparts = ramparts;
+        for(var i in ramparts)
+        {
+            var ramp = ramparts[i];
+            if(!ramp.memory)
+            {   
+                ramp.memory = {};
+                ramp.memory.full = {};
+                ramp.memory.full = false;
+            }
+        }   
     }
     
     
@@ -51,6 +71,9 @@ module.exports.loop = function () {
         else if (creep.memory.role == 'wallRepairer') {
             roleWallRepairer.run(creep);
         }
+        else if (creep.memory.role =='defender'){
+            roleDefender.run(creep);
+        }
     }
 
     //var towers = Game.rooms.find(FIND_STRUCTURES, {
@@ -66,10 +89,10 @@ module.exports.loop = function () {
     // setup some minimum numbers for different roles
     var minimumNumberOfHarvesters = 4;
     var minimumNumberOfUpgraders = 3;
-    var minimumNumberOfBuilders = 6;
-    var minimumNumberOfRepairers = 2;
-    var minimumNumberOfWallRepairers = 2;
-    var minimumNumberOfDefenders= 2;
+    var minimumNumberOfBuilders = 3;
+    var minimumNumberOfRepairers = 1;
+    var minimumNumberOfWallRepairers = 1;
+    var minimumNumberOfDefenders= 4;
     
     // count the number of creeps alive for each role
     // _.sum will count the number of properties in Game.creeps filtered by the

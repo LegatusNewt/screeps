@@ -20,20 +20,21 @@ module.exports = {
         else if (creep.memory.working == false) 
         {
             // switch state
-            creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+            var structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
                 // the second argument for findClosestByPath is an object which takes
                 // a property called filter which can be a function
                 // we use the arrow operator to define it
-                filter: (s) => (s.structureType == STRUCTURE_RAMPART)});
+                filter: (s) => (s.structureType == STRUCTURE_RAMPART) && s.memory.full==false});
             
-            if (structure != undefined) {
+            if (structure != null) {
                 // try to transfer energy, if it is not in range
                 if (creep.pos.isEqualTo(structure.pos)) 
                 {
                     creep.memory.working = true;
+                    structure.memory.full=true;
                 }
                 else
-                {                                              
+                {
                     creep.moveTo(structure);
                 }
             }
@@ -46,3 +47,5 @@ module.exports = {
         {
             creep.memory.working=false;
         }
+    }
+}

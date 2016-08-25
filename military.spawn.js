@@ -6,11 +6,11 @@ module.exports = function() {
             if(roleName = 'defender')
                 {
                     //420 YOLO Swaggins
-                    if(energy > 420)
+                    if(energy > 630)
                         {
-                            var body = [RANGED_ATTACK,RANGED_ATTACK,MOVE,MOVE,TOUGH,TOUGH];
+                            var body = [RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,MOVE,MOVE,MOVE,TOUGH,TOUGH,TOUGH];
                             
-                            return this.createCreep(body,undefined,{role:rolename,working:false});
+                            return this.createCreep(body,undefined,{role:roleName,working:false});
                         }
                 }
 
