@@ -7,7 +7,8 @@ module.exports = {
     run: function(creep) {
         //Set up room sources once
         if(miningLocations == null){
-            miningLocations = Game.spawns.Alpha.room.find(FIND_SOURCES);
+            miningLocations = Game.spawns[creep.memory.homeBase]
+                                    .room.find(FIND_SOURCES);
         }
         
         // if creep is bringing energy to a structure but has no energy left
@@ -59,7 +60,6 @@ module.exports = {
             
             //Check each source, find closest safe one.
             do{
-                console.log(creep.name+": attempting to find source. Tries:"+tries);
                 //Find the closest source out of those we haven't tried yet.
                 source = creep.pos.findClosestByPath(miningLocations.slice(tries));
                 tries = tries + 1;
