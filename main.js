@@ -1,19 +1,21 @@
 // import modules
 require('prototype.spawn')();
 require('military.spawn')();
-var roleHarvester = require('role.harvester');
-var roleDefender = require('role.defender');
-var roleUpgrader = require('role.upgrader');
-var roleBuilder = require('role.builder');
-var roleRepairer = require('role.repairer');
-var roleWallRepairer = require('role.wallRepairer');
-var assignSource = require('assignSource');
 
+var assignSource = require('assignSource');
 var creepSpawner = require('controller.spawner');
-//nochange
+
+//HashMap (Associative Array) of roleName to role Function
+
+var DEFAULT_BEHAVIOUR = 'harvester';
+var roleBehaviour = {};
+roleBehaviour['harvester'] = require('role.harvester');
+roleBehaviour['defender'] =  require('role.defender');
+roleBehaviour['upgrader'] =  require('role.upgrader');
+roleBehaviour['repairer'] =  require('role.repairer');
+roleBehaviour['wallRepairer'] =  require('role.wallRepairer');
 
 module.exports.loop = function () {
-    
     
     // check for memory entries of died creeps by iterating over Memory.creeps
     for (let name in Memory.creeps) {
@@ -24,70 +26,18 @@ module.exports.loop = function () {
         }
     }
     
-    //var ramparts =_.filter(Game.structures, {structureType: STRUCTURE_RAMPART});
-    //var ramp;
-    
-    //for(var roomName in Game.rooms)
-    //{
-    //    var room = Game.rooms[roomName];
-    //    room.memory.ramparts = ramparts;
-    //    for(var i in ramparts)
-    //    {
-    //        var ramp = ramparts[i];
-    //        if(!ramp.memory)
-    //        {   
-    //            ramp.memory = {};
-    //            ramp.memory.full = {};
-    //            ramp.memory.full = false;
-    //        }
-    //    }   
-    //}
-    
-    
-
-    //var harvesters = _.filter(Game.creeps, {memory: 'harvester'});
-    //assignSource.run(harvesters);
-    
     // for every creep name in Game.creeps
     for (let name in Game.creeps) {
         // get the creep object
         var creep = Game.creeps[name];
-
-        // if creep is harvester, call harvester script
-        if (creep.memory.role == 'harvester') {
-            roleHarvester.run(creep);
+        var action = roleBehaviour[creep.memory.role]; 
+        
+        if(typeof action == 'undefined') {
+            action = roleBehaviour[DEFAULT_BEHAVIOUR];
         }
-        // if creep is upgrader, call upgrader script
-        else if (creep.memory.role == 'upgrader') {
-            roleUpgrader.run(creep);
-        }
-        // if creep is builder, call builder script
-        else if (creep.memory.role == 'builder') {
-            roleBuilder.run(creep);
-        }
-        // if creep is repairer, call repairer script
-        else if (creep.memory.role == 'repairer') {
-            roleRepairer.run(creep);
-        }
-        // if creep is wallRepairer, call wallRepairer script
-        else if (creep.memory.role == 'wallRepairer') {
-            roleWallRepairer.run(creep);
-        }
-        else if (creep.memory.role =='defender'){
-            roleDefender.run(creep);
-        }
+        
+        action.run(creep);
     }
-
-    
-    //var towers = Game.rooms.find(FIND_STRUCTURES, {
-    //    filter: (s) => s.structureType == STRUCTURE_TOWER
-    //});
-    /*for (let tower of towers) {
-        var target = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if (target != undefined) {
-            tower.attack(target);
-        }
-    }*/
 
     creepSpawner.run();
 };

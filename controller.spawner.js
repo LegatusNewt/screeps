@@ -64,7 +64,9 @@ var calculateSpawn = {
         // print name to console if spawning was a success
         // name > 0 would not work since string > 0 returns false
         if (!(name < 0)) {
-            console.log("Spawned new creep: " + name);
+            console.log("Spawned new creep: " + name + ". With role: "+ Game.creeps[name].memory.role + ".");
         }
     }
 };
+
+module.exports = calculateSpawn;
