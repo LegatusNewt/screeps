@@ -1,21 +1,11 @@
 // import modules
-require('prototype.spawn')();
-require('military.spawn')();
-
-var assignSource = require('assignSource');
-var creepSpawner = require('controller.spawner');
-
-//HashMap (Associative Array) of roleName to role Function
-
-var DEFAULT_BEHAVIOUR = 'harvester';
-var roleBehaviour = {};
-roleBehaviour['harvester'] = require('role.harvester');
-roleBehaviour['defender'] =  require('role.defender');
-roleBehaviour['upgrader'] =  require('role.upgrader');
-roleBehaviour['repairer'] =  require('role.repairer');
-roleBehaviour['wallRepairer'] =  require('role.wallRepairer');
+require('behaviour3js');
+var bTree = require('role.harvester');
+var spawner = require('controller.spawner');
+var blackboards = {};
 
 module.exports.loop = function () {
+    
     
     // check for memory entries of died creeps by iterating over Memory.creeps
     for (let name in Memory.creeps) {
@@ -23,21 +13,20 @@ module.exports.loop = function () {
         if (Game.creeps[name] == undefined) {
             // if not, delete the memory entry
             delete Memory.creeps[name];
+			delete blackboards[name];
         }
     }
     
-    // for every creep name in Game.creeps
-    for (let name in Game.creeps) {
-        // get the creep object
-        var creep = Game.creeps[name];
-        var action = roleBehaviour[creep.memory.role]; 
-        
-        if(typeof action == 'undefined') {
-            action = roleBehaviour[DEFAULT_BEHAVIOUR];
+    for(let name in Game.creeps){
+        var c = Game.creeps[name];
+        var board = blackboards[name];
+        if(board == null || typeof board == 'undefined'){
+            blackboards[name] = new b3.Blackboard();
+            board = blackboards[name];
         }
         
-        action.run(creep);
+        bTree.tick(c,board);
     }
-
-    creepSpawner.run();
+    
+    spawner.run();
 };

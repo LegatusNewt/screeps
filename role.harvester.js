@@ -1,89 +1,103 @@
-var roleBuilder = require('role.builder');
-var DANGER_RANGE = 5;
+require('behaviour3js');
+var roleBehaviour = {};
+roleBehaviour['FindSource'] = require('behaviour.findSource');
+roleBehaviour['Harvest'] = require('behaviour.harvest');
+roleBehaviour['StoreResources'] = require('behaviour.storeResources');
 
-var miningLocations = null; 
-module.exports = {
-    // a function to run the logic for this role
-    run: function(creep) {
-        //Set up room sources once
-        if(miningLocations == null){
-            miningLocations = Game.spawns[creep.memory.homeBase]
-                                    .room.find(FIND_SOURCES);
+var behaviourTree = new b3.BehaviorTree();
+behaviourTree.load({
+    "title": "A Behavior Tree",
+    "description": "",
+    "root": "ea489313-13ca-4c00-8190-ddd363222d8b",
+    "display": {
+        "camera_x": 1178,
+        "camera_y": 492.5,
+        "camera_z": 1,
+        "x": -576,
+        "y": -176
+    },
+    "properties": {},
+    "nodes": {
+        "ea489313-13ca-4c00-8190-ddd363222d8b": {
+            "id": "ea489313-13ca-4c00-8190-ddd363222d8b",
+            "name": "MemSequence",
+            "title": "Harvest Sequence",
+            "description": "",
+            "display": {
+                "x": -368,
+                "y": -176
+            },
+            "parameters": {},
+            "properties": {},
+            "children": [
+                "0dbc2fbb-07fd-430d-8081-dbf3718e28db",
+                "ff6435ae-45fb-432c-8701-188529f23b73",
+                "851cb979-c2f7-495f-8020-8a43cd5923c2"
+            ]
+        },
+        "0dbc2fbb-07fd-430d-8081-dbf3718e28db": {
+            "id": "0dbc2fbb-07fd-430d-8081-dbf3718e28db",
+            "name": "FindSource",
+            "title": "Find Source",
+            "description": "",
+            "display": {
+                "x": -160,
+                "y": -240
+            },
+            "parameters": {},
+            "properties": {}
+        },
+        "ff6435ae-45fb-432c-8701-188529f23b73": {
+            "id": "ff6435ae-45fb-432c-8701-188529f23b73",
+            "name": "Harvest",
+            "title": "Harvest",
+            "description": "",
+            "display": {
+                "x": -160,
+                "y": -176
+            },
+            "parameters": {},
+            "properties": {}
+        },
+        "851cb979-c2f7-495f-8020-8a43cd5923c2": {
+            "id": "851cb979-c2f7-495f-8020-8a43cd5923c2",
+            "name": "StoreResources",
+            "title": "Store Resources",
+            "description": "",
+            "display": {
+                "x": -160,
+                "y": -112
+            },
+            "parameters": {},
+            "properties": {}
         }
-        
-        // if creep is bringing energy to a structure but has no energy left
-        if (creep.memory.working == true && creep.carry.energy == 0) {
-            // switch state
-            creep.memory.working = false;
+    },
+    "custom_nodes": [
+        {
+            "name": "FindSource",
+            "title": "Find Source",
+            "category": "action"
+        },
+        {
+            "name": "EnemiesNear",
+            "title": "Enemies Nearby",
+            "category": "condition"
+        },
+        {
+            "name": "MoveTo",
+            "title": "Move To",
+            "category": "action"
+        },
+        {
+            "name": "Harvest",
+            "title": "Harvest",
+            "category": "action"
+        },
+        {
+            "name": "StoreResources",
+            "title": "Store Resources",
+            "category": "action"
         }
-        // if creep is harvesting energy but is full
-        else if (creep.memory.working == false && creep.carry.energy == creep.carryCapacity) {
-            // switch state
-            creep.memory.working = true;
-        }
-
-        // if creep is supposed to transfer energy to a structure
-        if (creep.memory.working == true) {
-            // find closest spawn, extension or tower which is not full
-            var structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                // the second argument for findClosestByPath is an object which takes
-                // a property called filter which can be a function
-                // we use the arrow operator to define it
-                filter: (s) => (s.structureType == STRUCTURE_SPAWN
-                             || s.structureType == STRUCTURE_EXTENSION
-                             || s.structureType == STRUCTURE_TOWER
-                             || s.structureType == STRUCTURE_CONTAINER
-                             || s.structureType == STRUCTURE_STORAGE)
-                             && s.energy < s.energyCapacity
-                
-            });
-
-            // if we found one
-            if (structure != undefined) {
-                // try to transfer energy, if it is not in range
-                if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    // move towards it
-                    creep.moveTo(structure);
-                }
-            }
-            else
-            {
-                roleBuilder.run(creep);
-            }
-        }
-        // if creep is supposed to harvest energy from source
-        else {
-            // find closest source
-            var source = null;
-            var hostiles = null;
-            var tries = 0;
-            
-            //Check each source, find closest safe one.
-            do{
-                //Find the closest source out of those we haven't tried yet.
-                source = creep.pos.findClosestByPath(miningLocations.slice(tries));
-                tries = tries + 1;
-               
-                //If we found a source, make sure it isn't dangerous
-                if(source !== null){
-                    creep.memory.sourceID = source.id.toString;
-                    hostiles = source.pos.findInRange(FIND_HOSTILE_CREEPS, DANGER_RANGE);
-                
-                    if(hostiles.length > 0){
-                        console.log("It's too dangerous near: X: " + source.pos.x.toString() + " Y:"+source.pos.y.toString());
-                        console.log("Enemy's Owner: "+hostiles[0].owner.username);
-                    }
-                }
-            }while(hostiles.length > 0 && tries < miningLocations.length)
-            
-
-            // try to harvest energy, if the source is not in range
-            if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                // move towards the source
-                creep.moveTo(source);
-            }
-            
-            
-        }
-    }
-};
+    ]
+}, roleBehaviour);
+module.exports = behaviourTree;
